@@ -10,10 +10,9 @@ M3U_URLS = [
     "https://raw.githubusercontent.com/Akash802980/Mar-M/refs/heads/main/mr.m3u",
     "https://raw.githubusercontent.com/Akash802980/tee5/refs/heads/main/t5.m3u",
 ]
-
 # --- Direct Token & Chat ID ---
-TELEGRAM_BOT_TOKEN = "8253188928:AAGpN7UWpPdGOPLyBDaJSyRHzbMNxzjoKgE"  # Apna bot token
-CHAT_ID = "5496402943"                                        # Apna numeric chat ID
+TELEGRAM_BOT_TOKEN = "123456789:ABCdefGhIjKlMnoPQRsTuvWxYz"
+CHAT_ID = "123456789"
 
 def send_telegram(msg: str):
     """Send Telegram notification"""
@@ -32,7 +31,7 @@ def check_expiry(m3u_url: str) -> str:
     try:
         resp = requests.get(m3u_url, timeout=15)
         resp.raise_for_status()
-        data = resp.text.splitlines()[:15]  # pehle 15 lines
+        data = resp.text.splitlines()[:50]  # **first 50 lines**
     except Exception:
         return f"❌ {m3u_url.split('/')[-1]}: Failed to fetch"
 
