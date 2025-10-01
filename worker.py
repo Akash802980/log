@@ -8,6 +8,7 @@ M3U_URLS = [
     "https://raw.githubusercontent.com/Akash802980/Sl/refs/heads/main/slv.m3u",
     "https://raw.githubusercontent.com/Akash802980/nxtm3u/refs/heads/main/backend.m3u",
     "https://raw.githubusercontent.com/Akash802980/Mar-M/refs/heads/main/mr.m3u",
+    "https://raw.githubusercontent.com/Akash802980/tee5/refs/heads/main/t5.m3u",
 ]
 
 # --- Direct Token & Chat ID ---
