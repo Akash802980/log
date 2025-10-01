@@ -1,0 +1,32 @@
+name: M3U Expiry Monitor
+
+on:
+  schedule:
+    - cron: "0 1 * * *"   # 06:30 IST
+    - cron: "0 6 * * *"   # 11:30 IST
+    - cron: "0 11 * * *"  # 16:30 IST
+    - cron: "0 16 * * *"  # 21:30 IST
+    - cron: "0 21 * * *"  # 02:30 IST (next day)
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run expiry check
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python worker.py
+        
