@@ -8,27 +8,26 @@ M3U_URLS = [
     "https://raw.githubusercontent.com/Akash802980/Sl/refs/heads/main/slv.m3u",
     "https://raw.githubusercontent.com/Akash802980/nxtm3u/refs/heads/main/backend.m3u",
     "https://raw.githubusercontent.com/Akash802980/Mar-M/refs/heads/main/mr.m3u",
-    
 ]
 
-TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN"   # GitHub Secrets me set karo
-CHAT_ID = "YOUR_CHAT_ID"                # GitHub Secrets me set karo
+# --- Direct Token & Chat ID ---
+TELEGRAM_BOT_TOKEN = "123456789:ABCdefGhIjKlMnoPQRsTuvWxYz"  # Apna bot token
+CHAT_ID = "123456789"                                        # Apna numeric chat ID
 
 def send_telegram(msg: str):
-    """Send Telegram notification"""
+    """Send Telegram notification and log response"""
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": msg}
     try:
-        requests.post(url, data=payload, timeout=10)
+        resp = requests.post(url, data=payload, timeout=10)
+        print("Telegram Response:", resp.status_code, resp.text)
     except Exception as e:
         print("Telegram Error:", e)
 
 def unix_to_ist(unix_time: int) -> datetime:
-    """Convert unix timestamp to IST datetime"""
     return datetime.fromtimestamp(unix_time, tz=timezone.utc) + timedelta(hours=5, minutes=30)
 
 def check_expiry(m3u_url: str):
-    """Check expiry inside a given M3U file"""
     try:
         resp = requests.get(m3u_url, timeout=15)
         resp.raise_for_status()
@@ -44,8 +43,7 @@ def check_expiry(m3u_url: str):
 
     exp_time = int(matches[0])
     exp_dt = unix_to_ist(exp_time)
-
-    now = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)  # IST
+    now = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
 
     if exp_dt < now:
         diff = now - exp_dt
@@ -65,4 +63,4 @@ def check_expiry(m3u_url: str):
 if __name__ == "__main__":
     for url in M3U_URLS:
         check_expiry(url)
-      
+        
