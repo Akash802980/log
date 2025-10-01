@@ -12,56 +12,61 @@ M3U_URLS = [
 ]
 
 # --- Direct Token & Chat ID ---
-TELEGRAM_BOT_TOKEN = "8253188928:AAGpN7UWpPdGOPLyBDaJSyRHzbMNxzjoKgE"  # Apna bot token
-CHAT_ID = "5496402943"                                        # Apna numeric chat ID
+TELEGRAM_BOT_TOKEN = "123456789:ABCdefGhIjKlMnoPQRsTuvWxYz"
+CHAT_ID = "123456789"
 
 def send_telegram(msg: str):
-    """Send Telegram notification and log response"""
+    """Send Telegram notification"""
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": msg}
     try:
-        resp = requests.post(url, data=payload, timeout=10)
-        print("Telegram Response:", resp.status_code, resp.text)
+        requests.post(url, data=payload, timeout=10)
     except Exception as e:
         print("Telegram Error:", e)
 
 def unix_to_ist(unix_time: int) -> datetime:
     return datetime.fromtimestamp(unix_time, tz=timezone.utc) + timedelta(hours=5, minutes=30)
 
-def check_expiry(m3u_url: str):
+def check_expiry(m3u_url: str) -> str:
+    """Return single line status for this playlist"""
     try:
         resp = requests.get(m3u_url, timeout=15)
         resp.raise_for_status()
-        data = resp.text
-    except Exception as e:
-        send_telegram(f"❌ Failed to fetch {m3u_url}: {e}")
-        return
+        data = resp.text.splitlines()[:15]  # pehle 15 lines
+    except Exception:
+        return f"❌ {m3u_url.split('/')[-1]}: Failed to fetch"
 
-    matches = re.findall(r"exp=(\d+)", data)
-    if not matches:
-        send_telegram(f"⚠️ No exp token found in {m3u_url}")
-        return
+    exp_time = None
+    for line in data:
+        match = re.search(r"exp=(\d+)", line)
+        if match:
+            exp_time = int(match.group(1))
+            break
 
-    exp_time = int(matches[0])
+    m3u_name = m3u_url.split("/")[-1]
+
+    if not exp_time:
+        return f"⚠️ {m3u_name}: No exp token found"
+
     exp_dt = unix_to_ist(exp_time)
     now = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
 
     if exp_dt < now:
         diff = now - exp_dt
-        minutes = diff.total_seconds() // 60
-        hours = minutes // 60
-        minutes = minutes % 60
-        send_telegram(f"⚡ Stream expired!\nFile: {m3u_url}\nExpired at: {exp_dt.strftime('%Y-%m-%d %H:%M:%S')} IST\nNow: {now.strftime('%Y-%m-%d %H:%M:%S')} IST\nExpired {int(hours)}h {int(minutes)}m ago")
+        hours = int(diff.total_seconds() // 3600)
+        minutes = int((diff.total_seconds() % 3600) // 60)
+        return f"⚡ {m3u_name} expired | Expired {hours}h {minutes}m ago"
     else:
         diff = exp_dt - now
-        minutes = diff.total_seconds() // 60
-        hours = minutes // 60
-        minutes = minutes % 60
-        send_telegram(f"✅ Stream valid!\nFile: {m3u_url}\nExpires at: {exp_dt.strftime('%Y-%m-%d %H:%M:%S')} IST\nRemaining: {int(hours)}h {int(minutes)}m")
-        print(f"[OK] {m3u_url} valid till {exp_dt.strftime('%Y-%m-%d %H:%M:%S')} IST")
+        hours = int(diff.total_seconds() // 3600)
+        minutes = int((diff.total_seconds() % 3600) // 60)
+        return f"✅ {m3u_name} valid | Expires in {hours}h {minutes}m"
 
 # --- Main ---
 if __name__ == "__main__":
+    message_lines = []
     for url in M3U_URLS:
-        check_expiry(url)
-        
+        line = check_expiry(url)
+        message_lines.append(line)
+    final_msg = "\n".join(message_lines)
+    send_telegram(final_msg)
