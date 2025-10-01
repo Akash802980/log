@@ -12,8 +12,8 @@ M3U_URLS = [
 ]
 
 # --- Direct Token & Chat ID ---
-TELEGRAM_BOT_TOKEN = "123456789:ABCdefGhIjKlMnoPQRsTuvWxYz"
-CHAT_ID = "123456789"
+TELEGRAM_BOT_TOKEN = "8253188928:AAGpN7UWpPdGOPLyBDaJSyRHzbMNxzjoKgE"  # Apna bot token
+CHAT_ID = "5496402943"                                        # Apna numeric chat ID
 
 def send_telegram(msg: str):
     """Send Telegram notification"""
