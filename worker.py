@@ -5,7 +5,7 @@ from datetime import datetime, timezone, timedelta
 
 # --- Config ---
 M3U_URLS = [
-    "https://raw.githubusercontent.com/Akash802980/Sl/refs/heads/main/slv.m3u",
+    "https://my-worker.1akiytb4.workers.dev/",
     "https://raw.githubusercontent.com/Akash802980/nxtm3u/refs/heads/main/backend.m3u",
     "https://raw.githubusercontent.com/Akash802980/Mar-M/refs/heads/main/mr.m3u",
     "https://zee-worker.1akiytb4.workers.dev/",
